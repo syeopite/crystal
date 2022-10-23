@@ -98,7 +98,7 @@ prepare_system() {
 }
 
 build() {
-  with_build_env 'make std_spec clean threads=1 junit_output=.junit/std_spec.xml order=98031'
+  with_build_env 'make std_spec clean threads=1 junit_output=.junit/std_spec.xml order=98031 verbose=1'
 
   case $ARCH in
     i386)
