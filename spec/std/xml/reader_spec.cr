@@ -233,7 +233,7 @@ module XML
 
     describe "#node_type" do
       it "returns the node type" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root1/>")
         reader.node_type.should eq(XML::Reader::Type::NONE)
         reader.read
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
@@ -242,20 +242,20 @@ module XML
 
     describe "#name" do
       it "reads node name" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root2/>")
         reader.name.should eq("")
         reader.read
-        reader.name.should eq("root")
+        reader.name.should eq("root2")
       end
     end
 
     describe "#empty_element?" do
       it "checks if the node is empty" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root3/>")
         reader.empty_element?.should be_false
         reader.read
         reader.empty_element?.should be_true
-        reader = Reader.new("<root></root>")
+        reader = Reader.new("<root4></root4>")
         reader.read
         reader.empty_element?.should be_false
       end
@@ -263,26 +263,26 @@ module XML
 
     describe "#has_attributes?" do
       it "checks if the node has attributes" do
-        reader = Reader.new(%{<root id="1"><child/></root>})
+        reader = Reader.new(%{<root5 id="1"><child/></root5>})
         reader.has_attributes?.should be_false
-        reader.read # <root id="1">
+        reader.read # <root5 id="1">
         reader.has_attributes?.should be_true
         reader.read # <child/>
         reader.has_attributes?.should be_false
-        reader.read # </root>
+        reader.read # </root5>
         reader.has_attributes?.should be_true
       end
     end
 
     describe "#attributes_count" do
       it "returns the node's number of attributes" do
-        reader = Reader.new(%{<root id="1"><child/></root>})
+        reader = Reader.new(%{<root6 id="1"><child/></root6>})
         reader.attributes_count.should eq(0)
-        reader.read # <root id="1">
+        reader.read # <root6 id="1">
         reader.attributes_count.should eq(1)
         reader.read # <child/>
         reader.attributes_count.should eq(0)
-        reader.read # </root>
+        reader.read # </root6>
         # This is weird, since has_attributes? will be true.
         reader.attributes_count.should eq(0)
       end
@@ -290,9 +290,9 @@ module XML
 
     describe "#move_to_first_attribute" do
       it "moves to the first attribute of the node" do
-        reader = Reader.new(%{<root id="1"><child/></root>})
+        reader = Reader.new(%{<root7 id="1"><child/></root7>})
         reader.move_to_first_attribute.should be_false
-        reader.read # <root id="1">
+        reader.read # <root7 id="1">
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
         reader.move_to_first_attribute.should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
@@ -300,7 +300,7 @@ module XML
         reader.value.should eq("1")
         reader.read # <child/>
         reader.move_to_first_attribute.should be_false
-        reader.read # </root>
+        reader.read # </root7>
         reader.move_to_first_attribute.should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
         reader.name.should eq("id")
@@ -311,9 +311,9 @@ module XML
 
     describe "#move_to_next_attribute" do
       it "moves to the next attribute of the node" do
-        reader = Reader.new(%{<root id="1" id2="2"><child/></root>})
+        reader = Reader.new(%{<root8 id="1" id2="2"><child/></root8>})
         reader.move_to_next_attribute.should be_false
-        reader.read # <root id="1" id2="2">
+        reader.read # <root8 id="1" id2="2">
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
         reader.move_to_next_attribute.should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
@@ -326,7 +326,7 @@ module XML
         reader.move_to_next_attribute.should be_false
         reader.read # <child/>
         reader.move_to_next_attribute.should be_false
-        reader.read # </root>
+        reader.read # </root8>
         reader.move_to_next_attribute.should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
         reader.name.should eq("id")
@@ -337,9 +337,9 @@ module XML
 
     describe "#move_to_attribute" do
       it "moves to attribute with the specified name" do
-        reader = Reader.new(%{<root id="1" id2="2"><child/></root>})
+        reader = Reader.new(%{<root9 id="1" id2="2"><child/></root9>})
         reader.move_to_attribute("id2").should be_false
-        reader.read # <root id="1" id2="2">
+        reader.read # <root9 id="1" id2="2">
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
         reader.move_to_attribute("id2").should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
@@ -352,7 +352,7 @@ module XML
         reader.move_to_attribute("bogus").should be_false
         reader.read # <child/>
         reader.move_to_attribute("id2").should be_false
-        reader.read # </root>
+        reader.read # </root9>
         reader.move_to_attribute("id2").should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
         reader.name.should eq("id2")
@@ -363,56 +363,56 @@ module XML
 
     describe "#[]" do
       it "reads node attributes" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root10/>")
         expect_raises(KeyError) { reader["id"] }
         reader.read
         expect_raises(KeyError) { reader["id"] }
-        reader = Reader.new(%{<root id="1"/>})
+        reader = Reader.new(%{<root11 id="1"/>})
         reader.read
         reader["id"].should eq("1")
-        reader = Reader.new(%{<root id="1"><child/></root>})
-        reader.read # <root id="1">
+        reader = Reader.new(%{<root12 id="1"><child/></root12>})
+        reader.read # <root12 id="1">
         reader["id"].should eq("1")
         reader.read # <child/>
         expect_raises(KeyError) { reader["id"] }
-        reader.read # </root>
+        reader.read # </root12>
         reader["id"].should eq("1")
       end
     end
 
     describe "#[]?" do
       it "reads node attributes" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root13/>")
         reader["id"]?.should be_nil
         reader.read
         reader["id"]?.should be_nil
-        reader = Reader.new(%{<root id="1"/>})
+        reader = Reader.new(%{<root14 id="1"/>})
         reader.read
         reader["id"]?.should eq("1")
-        reader = Reader.new(%{<root id="1"><child/></root>})
-        reader.read # <root id="1">
+        reader = Reader.new(%{<root15 id="1"><child/></root15>})
+        reader.read # <root15 id="1">
         reader["id"]?.should eq("1")
         reader.read # <child/>
         reader["id"]?.should be_nil
-        reader.read # </root>
+        reader.read # </root15>
         reader["id"]?.should eq("1")
       end
     end
 
     describe "#move_to_element" do
       it "moves to the element node that contains the current attribute node" do
-        reader = Reader.new(%{<root id="1"></root>})
+        reader = Reader.new(%{<root16 id="1"></root16>})
         reader.move_to_element.should be_false
-        reader.read # <root id="1">
+        reader.read # <root16 id="1">
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
-        reader.name.should eq("root")
+        reader.name.should eq("root16")
         reader.move_to_element.should be_false
         reader.move_to_first_attribute.should be_true
         reader.node_type.should eq(XML::Reader::Type::ATTRIBUTE)
         reader.name.should eq("id")
         reader.move_to_element.should be_true
         reader.node_type.should eq(XML::Reader::Type::ELEMENT)
-        reader.name.should eq("root")
+        reader.name.should eq("root16")
         reader.read # </root>
         reader.move_to_element.should be_false
         reader.move_to_first_attribute.should be_true
@@ -420,29 +420,29 @@ module XML
         reader.name.should eq("id")
         reader.move_to_element.should be_true
         reader.node_type.should eq(XML::Reader::Type::END_ELEMENT)
-        reader.name.should eq("root")
+        reader.name.should eq("root16")
         reader.read.should be_false
       end
     end
 
     describe "#depth" do
       it "returns the depth of the node" do
-        reader = Reader.new("<root><child/></root>")
+        reader = Reader.new("<root17><child/></root17>")
         reader.depth.should eq(0)
-        reader.read # <root>
+        reader.read # <root17>
         reader.depth.should eq(0)
         reader.read # <child/>
         reader.depth.should eq(1)
-        reader.read # </root>
+        reader.read # </root17>
         reader.depth.should eq(0)
       end
     end
 
     describe "#read_inner_xml" do
       it "reads the contents of the node including child nodes and markup" do
-        reader = Reader.new("<root>\n<child/>\n</root>\n")
+        reader = Reader.new("<root18>\n<child/>\n</root18>\n")
         reader.read_inner_xml.should eq("")
-        reader.read # <root>
+        reader.read # <root18>
         reader.read_inner_xml.should eq("\n<child/>\n")
         reader.read # \n
         reader.read_inner_xml.should eq("")
@@ -450,7 +450,7 @@ module XML
         reader.read_inner_xml.should eq("")
         reader.read # \n
         reader.read_inner_xml.should eq("")
-        reader.read # </root>
+        reader.read # </root18>
         reader.read_inner_xml.should eq("")
         reader.read.should be_false
       end
@@ -458,35 +458,35 @@ module XML
 
     describe "#read_outer_xml" do
       it "reads the xml of the node including child nodes and markup" do
-        reader = Reader.new("<root>\n<child/>\n</root>\n")
+        reader = Reader.new("<root19>\n<child/>\n</root19>\n")
         reader.read_outer_xml.should eq("")
-        reader.read # <root>
-        reader.read_outer_xml.should eq("<root>\n<child/>\n</root>")
+        reader.read # <root19>
+        reader.read_outer_xml.should eq("<root19>\n<child/>\n</root19>")
         reader.read # \n
         reader.read_outer_xml.should eq("\n")
         reader.read # <child/>
         reader.read_outer_xml.should eq("<child/>")
         reader.read # \n
         reader.read_outer_xml.should eq("\n")
-        reader.read # </root>
+        reader.read # </root19>
         # Note that the closing element is transformed into a self-closing one.
-        reader.read_outer_xml.should eq("<root/>")
+        reader.read_outer_xml.should eq("<root19/>")
         reader.read.should be_false
       end
     end
 
     describe "#expand" do
       it "raises an exception if the node could not be expanded" do
-        reader = Reader.new(%{<root id="1<child/></root>}) # Invalid XML
+        reader = Reader.new(%{<root20 id="1<child/></root20>}) # Invalid XML
         reader.read
-        expect_raises XML::Error, "Couldn't find end of Start Tag root" do
+        expect_raises XML::Error, "Couldn't find end of Start Tag root20" do
           reader.expand
         end
       end
 
       it "parses the content of the node and subtree" do
-        reader = Reader.new(%{<root id="1"><child/></root>})
-        reader.read # <root id="1">
+        reader = Reader.new(%{<root21 id="1"><child/></root21>})
+        reader.read # <root21 id="1">
         node = reader.expand
         node.should be_a(XML::Node)
         node.attributes["id"].content.should eq("1")
@@ -494,8 +494,8 @@ module XML
       end
 
       it "is only available until the next read" do
-        reader = Reader.new(%{<root><child><subchild/></child></root>})
-        reader.read # <root>
+        reader = Reader.new(%{<root22><child><subchild/></child></root22>})
+        reader.read # <root22>
         reader.read # <child>
         node = reader.expand
         node.should be_a(XML::Node)
@@ -508,9 +508,9 @@ module XML
 
     describe "#expand?" do
       it "parses the content of the node and subtree" do
-        reader = Reader.new(%{<root id="1"><child/></root>})
+        reader = Reader.new(%{<root23 id="1"><child/></root23>})
         reader.expand?.should be_nil
-        reader.read # <root id="1">
+        reader.read # <root23 id="1">
         node = reader.expand?
         node.should be_a(XML::Node)
         node.not_nil!.attributes["id"].content.should eq("1")
@@ -518,8 +518,8 @@ module XML
       end
 
       it "is only available until the next read" do
-        reader = Reader.new(%{<root><child><subchild/></child></root>})
-        reader.read # <root>
+        reader = Reader.new(%{<root24><child><subchild/></child></root24>})
+        reader.read # <root24>
         reader.read # <child>
         node = reader.expand?
         node.should be_a(XML::Node)
@@ -532,15 +532,15 @@ module XML
 
     describe "#value" do
       it "reads node text value" do
-        reader = Reader.new(%{<root id="1">hello<!-- world --></root>})
+        reader = Reader.new(%{<root25 id="1">hello<!-- world --></root25>})
         reader.value.should eq("")
-        reader.read # <root>
+        reader.read # <root25>
         reader.value.should eq("")
         reader.read # hello
         reader.value.should eq("hello")
         reader.read # <!-- world -->
         reader.value.should eq(" world ")
-        reader.read # </root>
+        reader.read # </root25>
         reader.move_to_first_attribute.should be_true
         reader.value.should eq("1")
       end
@@ -548,7 +548,7 @@ module XML
 
     describe "#to_unsafe" do
       it "returns a pointer to the underlying LibXML::XMLTextReader" do
-        reader = Reader.new("<root/>")
+        reader = Reader.new("<root26/>")
         reader.to_unsafe.should be_a(LibXML::XMLTextReader)
       end
     end

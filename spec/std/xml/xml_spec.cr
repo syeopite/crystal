@@ -361,7 +361,7 @@ describe XML do
 
   it "reads big xml file (#1455)" do
     content = "." * 20_000
-    string = %(<?xml version="1.0"?><root>#{content}</root>)
+    string = %(<?xml version="1.0"?><rootA>#{content}</rootA>)
     parsed = XML.parse(IO::Memory.new(string))
     parsed.root.not_nil!.children[0].text.should eq(content)
   end
