@@ -1,0 +1,34 @@
+name: FreeBSD CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os.host }}
+    strategy:
+      matrix:
+        os:
+          - name: freebsd
+            architecture: x86-64
+            version: '13.1'
+            host: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test on ${{ matrix.os.name }}
+        uses: cross-platform-actions/action@v0.9.0
+        env:
+          SPEC_SPLIT_DOTS: 160
+        with:
+          environment_variables: SPEC_SPLIT_DOTS
+          operating_system: ${{ matrix.os.name }}
+          architecture: ${{ matrix.os.architecture }}
+          version: ${{ matrix.os.version }}
+          shell: bash
+          run: |
+            sudo pkg install -y crystal
+            crystal --version
+            make std_spec clean threads=1 junit_output=.junit/std_spec.xml
+            make make crystal primitives_spec std_spec compiler_spec threads=1 junit_output=.junit/spec.xml
+            make samples
