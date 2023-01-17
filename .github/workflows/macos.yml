@@ -1,6 +1,6 @@
 name: macOS CI
 
-on: [push, pull_request]
+on: workflow_call
 
 env:
   SPEC_SPLIT_DOTS: 160

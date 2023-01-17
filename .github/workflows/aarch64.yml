@@ -1,6 +1,6 @@
 name: AArch64 CI
 
-on: [push, pull_request]
+on: workflow_call
 
 jobs:
   aarch64-musl-build:

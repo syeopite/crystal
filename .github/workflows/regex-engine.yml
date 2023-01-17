@@ -1,6 +1,6 @@
 name: Regex Engine CI
 
-on: [push, pull_request]
+on: workflow_call
 
 jobs:
   pcre:
