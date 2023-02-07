@@ -29,7 +29,7 @@ jobs:
           run: |
             sudo mkdir -p /usr/local/etc/pkg/repos
             printf 'FreeBSD: {\n  url: "pkg+http://pkg.FreeBSD.org/${ABI}/latest"\n}\n' | sudo tee /usr/local/etc/pkg/repos/FreeBSD13.1-STABLE.conf
-            sudo pkg install -y crystal gmake openssl
+            sudo pkg install -y crystal gmake openssl git
             crystal --version
             gmake std_spec clean threads=1 stats=1 junit_output=.junit/std_spec.xml
             gmake crystal primitives_spec std_spec compiler_spec threads=1 junit_output=.junit/spec.xml
