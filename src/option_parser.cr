@@ -242,7 +242,7 @@ class OptionParser
 
   private def parse_flag_definition(flag : String)
     case flag
-    when Regex.new("\A--(\S+)\s+\[\S+\]\z")
+    when /\A--(\S+)\s+\[\S+\]\z/
       {"--#{$1}", FlagValue::Optional}
     when /\A--(\S+)(\s+|\=)(\S+)?\z/
       {"--#{$1}", FlagValue::Required}
