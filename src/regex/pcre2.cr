@@ -135,7 +135,9 @@ module Regex::PCRE2
   end
 
   class_getter general_context do
-    LibPCRE2.general_context_create(->(size : LibC::Int, data : Void*) { GC.malloc(size) }.pointer, ->(pointer : Void*, data : Void*) { GC.free(pointer) }.pointer, nil)
+    malloc = ->(size : LibC::SizeT, data : Void*) { GC.malloc(size) }
+    free = ->(pointer : Void*, data : Void*) { GC.free(pointer) }
+    LibPCRE2.general_context_create(malloc, free, nil)
   end
 
   # Returns a JIT stack that's shared in the current thread.
